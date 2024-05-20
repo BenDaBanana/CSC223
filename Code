@@ -1,16 +1,23 @@
+
 /**
  * Minesweeper
  *
  * Ben Graham
- * Version 1, 14/05/24
+ * Version 3, 20/05/24
  */
+import java.util.Scanner;
 public class Minesweeper
 {
     public static void main(String[] args){
+    Scanner keyboard = new Scanner(System.in);
     String[][] grid = new String[10][8];
     int bombs;
     int bombXPosition;
     int bombYPosition;
+    int playerXGuess;
+    int playerYGuess;
+    
+    boolean gameWon = false;
     bombs = 10;
     
    
@@ -29,12 +36,58 @@ public class Minesweeper
                 bombs --;
             }
     }
+    while (gameWon == false){
+        System.out.println('\u000c');
+        printGrid(grid);
+        System.out.println("enter X coordinate");
+        playerXGuess = keyboard.nextInt();
+        System.out.println("enter Y coordinate");
+        playerYGuess = keyboard.nextInt();
+        if( grid[playerYGuess-1][playerXGuess-1].equals("bomb")){
+            System.out.println("Game Over");
+            gameWon = true;
+        }
+        grid[playerYGuess-1][playerXGuess-1] = "revealed";
+    }
+    }   
     
+    static void printGrid(String[][] grid){
+        
+        System.out.print("  ");
+        for(int y=1;y<grid[0].length+1;y++){
+              
+            System.out.print(" " + y + "  ");
+            }
+            // System.out.print(" A   B   C   D   E   F   G   H");
+        System.out.println();
+        for(int x=0; x<grid.length; x++){
+            for(int y=0; y<grid[0].length; y++){
+                if(y == 0){
+                    if (x > 8){
+                        System.out.print(x+1);  
+                    
+                    } else{
+                        System.out.print(x+1 + " ");
+                    }
+                }
+                if(grid[x][y].equals("hidden")){
+                    System.out.print("[ ] " );
+                } else if (grid[x][y].equals("bomb")){
+                    System.out.print("[x] " );
+                } else if (grid[x][y].equals("revealed")){
+                    System.out.print("[0] " );
+                }
+            } 
+        System.out.println();
+        }
+        
+        
+        
+        
+    }
     
-    for(int x=0; x<grid.length; x++){
-        for(int y=0; y<grid[0].length; y++){
-            if(grid[x][y].equals("hidden")){
-                System.out.print("[ ] " );
+}
+
             } else if (grid[x][y].equals("bomb")){
                 System.out.print("[x] " );
             }
