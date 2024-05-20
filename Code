@@ -3,7 +3,7 @@
  * Minesweeper
  *
  * Ben Graham
- * Version 3, 20/05/24
+ * Version 4, 21/05/24
  */
 import java.util.Scanner;
 public class Minesweeper
@@ -39,9 +39,18 @@ public class Minesweeper
     while (gameWon == false){
         System.out.println('\u000c');
         printGrid(grid);
+        
         System.out.println("enter X coordinate");
+        while(!keyboard.hasNextInt()){
+            keyboard.nextLine();
+            System.out.println("input error, please enter an integer between 1-8");
+        }
         playerXGuess = keyboard.nextInt();
         System.out.println("enter Y coordinate");
+        while(!keyboard.hasNextInt()){
+            keyboard.nextLine();
+            System.out.println("input error, please enter an integer between 1-8");
+        }
         playerYGuess = keyboard.nextInt();
         if( grid[playerYGuess-1][playerXGuess-1].equals("bomb")){
             System.out.println("Game Over");
@@ -71,29 +80,14 @@ public class Minesweeper
                     }
                 }
                 if(grid[x][y].equals("hidden")){
-                    System.out.print("[ ] " );
+                    System.out.print(" .  " );
                 } else if (grid[x][y].equals("bomb")){
-                    System.out.print("[x] " );
+                    System.out.print(" x  " );
                 } else if (grid[x][y].equals("revealed")){
-                    System.out.print("[0] " );
+                    System.out.print(" 0  " );
                 }
             } 
-        System.out.println();
-        }
-        
-        
-        
-        
-    }
-    
-}
-
-            } else if (grid[x][y].equals("bomb")){
-                System.out.print("[x] " );
-            }
-        } 
-        System.out.println();
-    }
-    
-    }   
+            System.out.println();
+        }    
+    } 
 }
