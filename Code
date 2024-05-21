@@ -3,7 +3,7 @@
  * Minesweeper
  *
  * Ben Graham
- * Version 4, 21/05/24
+ * Version 5, 22/05/24
  */
 import java.util.Scanner;
 public class Minesweeper
@@ -41,17 +41,22 @@ public class Minesweeper
         printGrid(grid);
         
         System.out.println("enter X coordinate");
-        while(!keyboard.hasNextInt()){
-            keyboard.nextLine();
-            System.out.println("input error, please enter an integer between 1-8");
+    
+        playerXGuess = getInput(8);
+        while(playerXGuess < 1 || playerXGuess > 8){
+            System.out.println("ERROR, enter X coordinate between 1 and 8");
+            playerXGuess = getInput(8);
         }
-        playerXGuess = keyboard.nextInt();
+        
         System.out.println("enter Y coordinate");
-        while(!keyboard.hasNextInt()){
-            keyboard.nextLine();
-            System.out.println("input error, please enter an integer between 1-8");
+        
+        playerYGuess = getInput(10);
+        while(playerYGuess < 1 || playerYGuess > 10){
+            System.out.println("ERROR, enter Y coordinate between 1 and 10");
+            playerXGuess = getInput(10);
         }
-        playerYGuess = keyboard.nextInt();
+        
+        
         if( grid[playerYGuess-1][playerXGuess-1].equals("bomb")){
             System.out.println("Game Over");
             gameWon = true;
@@ -90,4 +95,14 @@ public class Minesweeper
             System.out.println();
         }    
     } 
+    
+    static int getInput(int max){
+        Scanner keyboard = new Scanner(System.in);
+        while(!keyboard.hasNextInt()){
+                keyboard.nextLine();
+                System.out.println("input error, please enter an integer between 1-"+max);
+            }
+        return(keyboard.nextInt()); 
+    } 
 }
+
