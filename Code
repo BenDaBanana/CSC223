@@ -3,7 +3,7 @@
  * Minesweeper
  *
  * Ben Graham
- * Version 5, 22/05/24
+ * Version 5, 05/06/24
  */
 import java.util.Scanner;
 public class Minesweeper
@@ -37,7 +37,7 @@ public class Minesweeper
             }
     }
     while (gameWon == false){
-        System.out.println('\u000c');
+        
         printGrid(grid);
         
         System.out.println("enter X coordinate");
@@ -53,7 +53,7 @@ public class Minesweeper
         playerYGuess = getInput(10);
         while(playerYGuess < 1 || playerYGuess > 10){
             System.out.println("ERROR, enter Y coordinate between 1 and 10");
-            playerXGuess = getInput(10);
+            playerYGuess = getInput(10);
         }
         
         
@@ -66,7 +66,7 @@ public class Minesweeper
     }   
     
     static void printGrid(String[][] grid){
-        
+        System.out.println('\u000c');
         System.out.print("  ");
         for(int y=1;y<grid[0].length+1;y++){
               
@@ -89,7 +89,8 @@ public class Minesweeper
                 } else if (grid[x][y].equals("bomb")){
                     System.out.print(" x  " );
                 } else if (grid[x][y].equals("revealed")){
-                    System.out.print(" 0  " );
+                    
+                    System.out.print(" "+surroundingBombs(grid, x, y) + "  " );
                 }
             } 
             System.out.println();
@@ -99,10 +100,27 @@ public class Minesweeper
     static int getInput(int max){
         Scanner keyboard = new Scanner(System.in);
         while(!keyboard.hasNextInt()){
-                keyboard.nextLine();
-                System.out.println("input error, please enter an integer between 1-"+max);
-            }
+             keyboard.nextLine();
+             System.out.println("input error, please enter an integer between 1-"+max);
+        }
         return(keyboard.nextInt()); 
     } 
+    
+    static int surroundingBombs(String[][] grid, int yCoordinate, int xCoordinate){
+        int bombNum = 0;
+        for(int y=yCoordinate-1; y<yCoordinate+2;y++){
+            if(y > 0 && y < 10){
+                for(int x=xCoordinate-1; x<xCoordinate+2;x++){
+                    if(x > 0 && x < 8){
+                        // System.out.println();
+                        // System.out.println(" X is  "+x + " Y is " + y);
+                        if(grid[y][x].equals("bomb")){
+                            bombNum++;
+                        }
+                    }   
+                }
+            }
+        } 
+        return(bombNum);
+    }
 }
-
