@@ -1,4 +1,3 @@
-
 /**
  * Minesweeper
  *
@@ -91,6 +90,8 @@ public class Minesweeper
                 } else if (grid[x][y].equals("revealed")){
                     
                     System.out.print(" "+surroundingBombs(grid, x, y) + "  " );
+                }else if (grid[x][y].equals("zero")){
+                    System.out.print(" 0  " );
                 }
             } 
             System.out.println();
@@ -109,18 +110,32 @@ public class Minesweeper
     static int surroundingBombs(String[][] grid, int yCoordinate, int xCoordinate){
         int bombNum = 0;
         for(int y=yCoordinate-1; y<yCoordinate+2;y++){
-            if(y > 0 && y < 10){
                 for(int x=xCoordinate-1; x<xCoordinate+2;x++){
-                    if(x > 0 && x < 8){
-                        // System.out.println();
-                        // System.out.println(" X is  "+x + " Y is " + y);
+                    try{
                         if(grid[y][x].equals("bomb")){
                             bombNum++;
                         }
-                    }   
-                }
+                    } catch(Exception e){}
             }
         } 
+        if(bombNum == 0){
+            grid[yCoordinate][xCoordinate] = "zero";
+            cascade(grid, yCoordinate, xCoordinate);
+        }
         return(bombNum);
+    }
+    
+    static void cascade(String[][] grid, int yCoordinate, int xCoordinate){
+        for(int y=yCoordinate-1; y<yCoordinate+2;y++){
+                for(int x=xCoordinate-1; x<xCoordinate+2;x++){
+                    try{
+                        if(grid[y][x] != grid[yCoordinate][xCoordinate]){
+                        grid[y][x] = "revealed";
+                        printGrid(grid);
+                        }
+                    } catch(Exception e){}
+            }
+        } 
+        
     }
 }
