@@ -4,23 +4,27 @@
  * Minesweeper
  *
  * Ben Graham
- * Version 6, 08/06/24
+ * Version 5, 05/06/24
  */
 import java.util.Scanner;
 public class Minesweeper
 {
     public static void main(String[] args){
     Scanner keyboard = new Scanner(System.in);
-    String[][] grid = new String[10][8];
+    String[][] grid = new String[20][15];
     int bombs;
     int bombXPosition;
     int bombYPosition;
+    int xMax;
+    int yMax;
     int playerXGuess;
     int playerYGuess;
-    
+    int hiddenTiles;
     boolean gameWon = false;
     
-    bombs = 10;
+    bombs = 1000;
+    xMax = grid[0].length;
+    yMax = grid.length;
     
    
     for(int x=0; x<grid.length; x++){
@@ -41,22 +45,22 @@ public class Minesweeper
     
     while (gameWon == false){
         printGrid(grid, '.');
-        
+        hiddenTiles = 0;
         
         System.out.println("enter X coordinate");
     
-        playerXGuess = getInput(8);
-        while(playerXGuess < 1 || playerXGuess > 8){
+        playerXGuess = getInput(xMax);
+        while(playerXGuess < 1 || playerXGuess > xMax){
             System.out.println("ERROR, enter X coordinate between 1 and 8");
-            playerXGuess = getInput(8);
+            playerXGuess = getInput(xMax);
         }
         
         System.out.println("enter Y coordinate");
         
-        playerYGuess = getInput(10);
-        while(playerYGuess < 1 || playerYGuess > 10){
+        playerYGuess = getInput(yMax);
+        while(playerYGuess < 1 || playerYGuess > yMax){
             System.out.println("ERROR, enter Y coordinate between 1 and 10");
-            playerYGuess = getInput(10);
+            playerYGuess = getInput(yMax);
         }
         
         
@@ -70,6 +74,19 @@ public class Minesweeper
             printGrid(grid, 'x');
             System.out.println("Game Over");
         }
+        for(int x=0; x<grid.length; x++){
+            for(int y=0; y<grid[0].length; y++){
+                if(grid[x][y].equals("hidden")){
+                    hiddenTiles++;
+                }
+            } 
+        }
+        if(hiddenTiles== 0){
+            gameWon = true;
+            printGrid(grid, 'x');
+            System.out.println("Game Won, good job");
+        }
+        
         if(gameWon == false){
             printGrid(grid, '.');
         }
@@ -80,8 +97,11 @@ public class Minesweeper
         System.out.println('\u000c');
         System.out.print("  ");
         for(int y=1;y<grid[0].length+1;y++){
-              
-            System.out.print(" " + y + "  ");
+            if(y < 10){
+                System.out.print(" " + y + "  ");
+            } else{
+                System.out.print(" " + y + " ");
+            }
             }
             // System.out.print(" A   B   C   D   E   F   G   H");
         System.out.println();
@@ -103,7 +123,7 @@ public class Minesweeper
                     
                     System.out.print(" "+surroundingBombs(grid, y, x) + "  " );
                 }else if (grid[y][x].equals("zero")){
-                    System.out.print(" 0  " );
+                    System.out.print("    " );
                 }
             } 
             System.out.println();
