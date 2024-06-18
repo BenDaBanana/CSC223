@@ -1,97 +1,115 @@
 
 
+
 /**
  * Minesweeper
  *
  * Ben Graham
- * Version 5, 05/06/24
+ * Version 7, 19/06/24
  */
 import java.util.Scanner;
 public class Minesweeper
 {
     public static void main(String[] args){
-    Scanner keyboard = new Scanner(System.in);
-    String[][] grid = new String[20][15];
-    int bombs;
-    int bombXPosition;
-    int bombYPosition;
-    int xMax;
-    int yMax;
-    int playerXGuess;
-    int playerYGuess;
-    int hiddenTiles;
-    boolean gameWon = false;
-    
-    bombs = 1000;
-    xMax = grid[0].length;
-    yMax = grid.length;
-    
-   
-    for(int x=0; x<grid.length; x++){
-        for(int y=0; y<grid[0].length; y++){
-            grid[x][y] = "hidden";
+        Scanner keyboard = new Scanner(System.in);
+        String[][] grid = new String[1][1];
+        int bombs = 0;    
+        int playerXGuess;
+        int playerYGuess;
+        int xMax;
+        int yMax;
+        int hiddenTiles;
+        boolean gameWon = false;
+        boolean rightInput = true;
+        
+        while(rightInput){
+            System.out.println('\u000c');
+            System.out.println("What size would you like your game: small, medium or large?"); 
+            String size = keyboard.nextLine();
+                
+            if((size.toLowerCase()).equals("small")){
+                grid = new String[10][8];
+                bombs = 10;
+                rightInput = false;
+            } else if((size.toLowerCase()).equals("medium")){
+                 grid = new String[18][14];
+                 bombs = 40;
+                 rightInput = false;
+            } else if((size.toLowerCase()).equals("large")){
+                 grid = new String[30][26];
+                 bombs = 120;
+                 rightInput = false;
+            }
+        }
+        xMax = grid[0].length;
+        yMax = grid.length;
+        
+        for(int y=0; y<yMax; y++){  // setup grid with blank squares
+            for(int x=0; x<xMax; x++){
+                grid[y][x] = "hidden";
+                
+            } 
+        }
+        bombSetup(bombs, grid);
+        while (gameWon == false){
+            printGrid(grid, '.');
+            hiddenTiles = 0;
             
-        } 
-    }
+            
+            System.out.println("enter X coordinate");
+        
+            playerXGuess = getInput(xMax); // get input for x coordinate
+            while(playerXGuess < 1 || playerXGuess > xMax){
+                System.out.println("ERROR, enter X coordinate between 1 and "+ xMax);
+                playerXGuess = getInput(xMax);
+            }
+            
+            System.out.println("enter Y coordinate");
+            
+            playerYGuess = getInput(yMax); // get input for y coordinate
+            while(playerYGuess < 1 || playerYGuess > yMax){
+                System.out.println("ERROR, enter Y coordinate between 1 and " +yMax);
+                playerYGuess = getInput(yMax);
+            }
+            if( grid[playerYGuess-1][playerXGuess-1].equals("hidden")){ // if checked square isn't a bomb
+                grid[playerYGuess-1][playerXGuess-1] = "revealed";
+            }
+            if( grid[playerYGuess-1][playerXGuess-1].equals("bomb")){
+                gameWon = true;
+                printGrid(grid, 'x');
+                System.out.println("Game Over");
+            }
+             for(int x=0; x<grid.length; x++){
+                for(int y=0; y<grid[0].length; y++){
+                    if(grid[x][y].equals("hidden")){
+                        hiddenTiles++;
+                    }
+                } 
+            }
+            if(hiddenTiles== 0){
+                gameWon = true;
+                printGrid(grid, 'x');
+                System.out.println("Game Won, good job");
+            }
+            if(gameWon == false){
+                printGrid(grid, '.');
+            }
+        }
+    }   
     
-    while(bombs > 0){
+    static void bombSetup(int bombs, String[][] grid){
+        int bombXPosition;
+        int bombYPosition;
+        while(bombs > 0){
             bombYPosition = (int)Math.floor(Math.random() * grid.length);
             bombXPosition = (int)Math.floor(Math.random() * grid[0].length);
             if(grid[bombYPosition][bombXPosition] != "bomb"){
+                System.out.println(grid[bombYPosition][bombXPosition]);
                 grid[bombYPosition][bombXPosition] = "bomb";
                 bombs --;
             }
+        }  
     }
-    
-    while (gameWon == false){
-        printGrid(grid, '.');
-        hiddenTiles = 0;
-        
-        System.out.println("enter X coordinate");
-    
-        playerXGuess = getInput(xMax);
-        while(playerXGuess < 1 || playerXGuess > xMax){
-            System.out.println("ERROR, enter X coordinate between 1 and 8");
-            playerXGuess = getInput(xMax);
-        }
-        
-        System.out.println("enter Y coordinate");
-        
-        playerYGuess = getInput(yMax);
-        while(playerYGuess < 1 || playerYGuess > yMax){
-            System.out.println("ERROR, enter Y coordinate between 1 and 10");
-            playerYGuess = getInput(yMax);
-        }
-        
-        
-        
-        if( grid[playerYGuess-1][playerXGuess-1].equals("hidden")){
-            grid[playerYGuess-1][playerXGuess-1] = "revealed";
-        }
-        printGrid(grid, '.');
-        if( grid[playerYGuess-1][playerXGuess-1].equals("bomb")){
-            gameWon = true;
-            printGrid(grid, 'x');
-            System.out.println("Game Over");
-        }
-        for(int x=0; x<grid.length; x++){
-            for(int y=0; y<grid[0].length; y++){
-                if(grid[x][y].equals("hidden")){
-                    hiddenTiles++;
-                }
-            } 
-        }
-        if(hiddenTiles== 0){
-            gameWon = true;
-            printGrid(grid, 'x');
-            System.out.println("Game Won, good job");
-        }
-        
-        if(gameWon == false){
-            printGrid(grid, '.');
-        }
-    }
-    }   
     
     static void printGrid(String[][] grid, char bombChar){
         System.out.println('\u000c');
@@ -102,8 +120,8 @@ public class Minesweeper
             } else{
                 System.out.print(" " + y + " ");
             }
-            }
-            // System.out.print(" A   B   C   D   E   F   G   H");
+        }
+        //System.out.println(" A   B   C   D   E   F   G   H");   
         System.out.println();
         for(int y=0; y<grid.length; y++){
             for(int x=0; x<grid[0].length; x++){
