@@ -1,11 +1,11 @@
 /**
- * Minesweeper
+ * CascadeTurnOfMinesweeper
  *
  * Ben Graham
  * Version 7, 19/06/24
  */
 import java.util.Scanner;
-public class Minesweeper
+public class CascadeTurnOfMinesweeper
 {
     public static void main(String[] args){
         Scanner keyboard = new Scanner(System.in);
@@ -15,9 +15,12 @@ public class Minesweeper
         int playerYGuess;
         int xMax;
         int yMax;
+        int bombXPosition;
+        int bombYPosition;
         int hiddenTiles;
         boolean gameWon = false;
         boolean rightInput = true;
+        boolean firstTurn = true;
         
         while(rightInput){
             System.out.println('\u000c');
@@ -26,15 +29,15 @@ public class Minesweeper
                 
             if((size.toLowerCase()).equals("small")){
                 grid = new String[10][8];
-                bombs = 10;
+                bombs = 30;
                 rightInput = false;
             } else if((size.toLowerCase()).equals("medium")){
                  grid = new String[18][14];
                  bombs = 40;
                  rightInput = false;
             } else if((size.toLowerCase()).equals("large")){
-                 grid = new String[30][26];
-                 bombs = 120;
+                 grid = new String[100][80];
+                 bombs = 700;
                  rightInput = false;
             }
         }
@@ -47,15 +50,13 @@ public class Minesweeper
                 
             } 
         }
-        bombSetup(bombs, grid);
+        
         printGrid(grid, 'x');
         while (gameWon == false){
-            //printGrid(grid, '.');
             hiddenTiles = 0;
             
             
             System.out.println("enter X coordinate");
-        
             playerXGuess = getInput(xMax); // get input for x coordinate
             while(playerXGuess < 1 || playerXGuess > xMax){
                 System.out.println("ERROR, enter X coordinate between 1 and "+ xMax);
@@ -63,20 +64,42 @@ public class Minesweeper
             }
             
             System.out.println("enter Y coordinate");
-            
             playerYGuess = getInput(yMax); // get input for y coordinate
             while(playerYGuess < 1 || playerYGuess > yMax){
                 System.out.println("ERROR, enter Y coordinate between 1 and " +yMax);
                 playerYGuess = getInput(yMax);
             }
-            if( grid[playerYGuess-1][playerXGuess-1].equals("hidden")){ // if checked square isn't a bomb
+            
+            if(firstTurn){
+                    for(int y=playerYGuess-2; y<playerYGuess+1;y++){
+                        for(int x=playerXGuess-2; x<playerXGuess+1;x++){
+                            try{
+                            grid[y][x] = "marked";
+                            }catch(Exception E){}
+                        }
+                }  
+                while(bombs > 0){
+                    bombYPosition = (int)Math.floor(Math.random() * grid.length);
+                    bombXPosition = (int)Math.floor(Math.random() * grid[0].length);
+                     
+                    if(grid[bombYPosition][bombXPosition] != "bomb" && grid[bombYPosition][bombXPosition] != "marked"){
+                            System.out.println(grid[bombYPosition][bombXPosition]);
+                            grid[bombYPosition][bombXPosition] = "bomb";
+                            bombs --;
+                    }
+                }
+            }
+            
+            if( grid[playerYGuess-1][playerXGuess-1].equals("hidden")|| grid[playerYGuess-1][playerXGuess-1].equals("marked")){ // if checked square isn't a bomb
                 grid[playerYGuess-1][playerXGuess-1] = surroundingBombs(grid, playerYGuess-1, playerXGuess-1);
             }
+            
             if( grid[playerYGuess-1][playerXGuess-1].equals("bomb")){
                 gameWon = true;
                 printGrid(grid, 'x');
                 System.out.println("Game Over");
             }
+            
              for(int x=0; x<grid.length; x++){
                 for(int y=0; y<grid[0].length; y++){
                     if(grid[x][y].equals("hidden")){
@@ -84,30 +107,24 @@ public class Minesweeper
                     }
                 } 
             }
+            
             if(hiddenTiles== 0){
                 gameWon = true;
                 printGrid(grid, 'x');
                 System.out.println("Game Won, good job");
             }
+            
             if(gameWon == false){
-                printGrid(grid, '.');
+                printGrid(grid, 'x');
             }
+            firstTurn = false;
         }
     }   
     
-    static void bombSetup(int bombs, String[][] grid){
-        int bombXPosition;
-        int bombYPosition;
-        while(bombs > 0){
-            bombYPosition = (int)Math.floor(Math.random() * grid.length);
-            bombXPosition = (int)Math.floor(Math.random() * grid[0].length);
-            if(grid[bombYPosition][bombXPosition] != "bomb"){
-                System.out.println(grid[bombYPosition][bombXPosition]);
-                grid[bombYPosition][bombXPosition] = "bomb";
-                bombs --;
-            }
-        }  
-    }
+    
+            
+            
+    
     
     static void printGrid(String[][] grid, char bombChar){
         System.out.println('\u000c');
@@ -135,11 +152,9 @@ public class Minesweeper
                     System.out.print(" .  " );
                 } else if (grid[y][x].equals("bomb")){
                     System.out.print(" " + bombChar + "  " );
-                //} else if (grid[y][x].equals("revealed")){    
-                //    System.out.print(" "+surroundingBombs(grid, y, x) + "  " );
                 }else if (grid[y][x].equals("0")){
                     System.out.print("    " );
-                } else {
+                }else {
                     System.out.print(" " + grid[y][x] + "  ");
                 }
             } 
@@ -180,7 +195,7 @@ public class Minesweeper
                 for(int x=xCoordinate-1; x<xCoordinate+2;x++){
                     try{
                         if(grid[y][x] != grid[yCoordinate][xCoordinate]){
-                            if(grid[y][x] == "hidden"){
+                            if(grid[y][x] == "hidden" || grid[y][x] == "marked"){
                                 grid[y][x] = surroundingBombs(grid, y, x);
                         }
                         }
