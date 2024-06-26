@@ -1,9 +1,9 @@
 
 /**
- * CascadeTurnOfMinesweeper
+ * Minesweeper
  *
  * Ben Graham
- * Version 7, 19/06/24
+ * Version 8, 26/06/24
  */
 import java.util.Scanner;
 public class Minesweeper
@@ -11,6 +11,7 @@ public class Minesweeper
     public static void main(String[] args){
         Scanner keyboard = new Scanner(System.in);
         String[][] grid = new String[1][1];
+        String option;
         int bombs = 0;  //setup variables
         char playerXLetter;
         int playerXGuess = 0;
@@ -25,22 +26,23 @@ public class Minesweeper
         boolean rightInput = true;
         boolean firstTurn = true;
         boolean letterInput;
+        boolean isFlagging = false;
         
         while(rightInput){
             System.out.println('\u000c');
             System.out.println("What size would you like your game: small, medium or large?"); 
-            String size = keyboard.nextLine();
+            option = keyboard.nextLine();
             
             //setup for size of the game
-            if((size.toLowerCase()).equals("small")){ 
+            if((option.toLowerCase()).equals("small")){ 
                 grid = new String[10][8];
                 bombs = 10;
                 rightInput = false;
-            } else if((size.toLowerCase()).equals("medium")){
+            } else if((option.toLowerCase()).equals("medium")){
                  grid = new String[18][14];
                  bombs = 40;
                  rightInput = false;
-            } else if((size.toLowerCase()).equals("large")){
+            } else if((option.toLowerCase()).equals("large")){
                  grid = new String[30][26];
                  bombs = 125;
                  rightInput = false;
@@ -56,9 +58,22 @@ public class Minesweeper
             } 
         }
         
-        printGrid(grid, 'x');
+        printGrid(grid, '.');
+        
         while (gameWon == false){
             hiddenTiles = 0;
+            rightInput = true;
+            while(rightInput){
+                System.out.println("would you like to dig a square or flag a square (D or F)");
+                option = keyboard.nextLine();
+                if(option.equals("D")){
+                        isFlagging = false;
+                        rightInput = false;
+                } else if(option.equals("F")){
+                        isFlagging = true;
+                        rightInput = false;
+                }
+            }
             
             letterInput = true;
             System.out.println("enter X coordinate");
@@ -99,17 +114,17 @@ public class Minesweeper
             }
             
             //reveal selected square
-            if( grid[playerYGuess-1][playerXGuess-1].equals("hidden")|| grid[playerYGuess-1][playerXGuess-1].equals("marked")){ // if checked square isn't a bomb
+            if(isFlagging){
+                grid[playerYGuess-1][playerXGuess-1] = "F";
+            } else if(grid[playerYGuess-1][playerXGuess-1].equals("hidden")|| grid[playerYGuess-1][playerXGuess-1].equals("marked")){ // if checked square isn't a bomb
                 grid[playerYGuess-1][playerXGuess-1] = surroundingBombs(grid, playerYGuess-1, playerXGuess-1);
-            }
-            
-            
-            //ends game if guessed square is a bomb
-            if( grid[playerYGuess-1][playerXGuess-1].equals("bomb")){
+            } else if( grid[playerYGuess-1][playerXGuess-1].equals("bomb")){
                 gameWon = true;
                 printGrid(grid, 'x');
-                System.out.println("Game Over");
+                System.out.println("Game Over"); //ends game if guessed square is a bomb
             }
+            
+            
             
             
             //checks all squares, if all non bombs have been revealed, end game
@@ -133,12 +148,7 @@ public class Minesweeper
             firstTurn = false;
         }
     }   
-    
-    
-            
-            
-    
-    
+
     static void printGrid(String[][] grid, char bombChar){
         System.out.println('\u000c');
         System.out.print("  ");
