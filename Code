@@ -17,13 +17,14 @@ public class Minesweeper
         int playerYGuess;
         int xMax;
         int yMax;
+        char maxLetter = 'A';
         int bombXPosition;
         int bombYPosition;
         int hiddenTiles;
         boolean gameWon = false;
         boolean rightInput = true;
         boolean firstTurn = true;
-        boolean letterInput = true;
+        boolean letterInput;
         
         while(rightInput){
             System.out.println('\u000c');
@@ -59,22 +60,20 @@ public class Minesweeper
         while (gameWon == false){
             hiddenTiles = 0;
             
-            
+            letterInput = true;
             System.out.println("enter X coordinate");
-            //playerXGuess = getInput(xMax); // get input for x coordinate
+            playerXGuess = getInput(xMax, letterInput);
             while(playerXGuess < 1 || playerXGuess > xMax){
-                System.out.println("ERROR, enter X coordinate between A and "+ xMax);
-                playerXLetter = keyboard.next().charAt(0);
-                playerXGuess =playerXLetter - 64;
-                System.out.print(playerXGuess);
+                System.out.println("ERROR, enter X coordinate between A and "+ (char)(maxLetter + xMax-1));
+                playerXGuess = getInput(xMax, letterInput);
             }
             
+            letterInput = false;
             System.out.println("enter Y coordinate");
-            
-            playerYGuess = getInput(yMax); // get input for y coordinate
+            playerYGuess = getInput(yMax, letterInput); // get input for y coordinate
             while(playerYGuess < 1 || playerYGuess > yMax){
                 System.out.println("ERROR, enter Y coordinate between 1 and " +yMax);
-                playerYGuess = getInput(yMax);
+                playerYGuess = getInput(yMax, letterInput);
             }
             
             //makes the first turn always a cascade
@@ -143,13 +142,6 @@ public class Minesweeper
     static void printGrid(String[][] grid, char bombChar){
         System.out.println('\u000c');
         System.out.print("  ");
-        // for(int y=1;y<grid[0].length+1;y++){
-            // if(y < 10){
-                // System.out.print(" " + y + "  ");
-            // } else{
-                // System.out.print(" " + y + " ");
-            // }
-        // }
         
         for(char c = 'A'; c < 'A'+ grid[0].length; c++){
             System.out.print(" " + c + "  ") ;  
@@ -180,13 +172,21 @@ public class Minesweeper
         }    
     } 
     
-    static int getInput(int max){
+    static int getInput(int max, boolean letterInput){
         Scanner keyboard = new Scanner(System.in);
-        while(!keyboard.hasNextInt()){
-             keyboard.nextLine();
-             System.out.println("input error, please enter an integer between 1-"+max);
+        int playerGuess;
+        char playerLetter;
+        if(letterInput){
+                playerLetter = keyboard.next().charAt(0);
+                playerGuess = Character.toUpperCase(playerLetter) - 64;
+        }else{
+            while(!keyboard.hasNextInt()){
+                 keyboard.nextLine();
+                 System.out.println("input error, please enter an integer between 1-"+max);
+            }
+            playerGuess = keyboard.nextInt();
         }
-        return(keyboard.nextInt()); 
+        return(playerGuess); 
     } 
     
     static String surroundingBombs(String[][] grid, int yCoordinate, int xCoordinate){
