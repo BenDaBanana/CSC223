@@ -115,17 +115,18 @@ public class Minesweeper
             
             //reveal selected square
             if(isFlagging){
-                grid[playerYGuess-1][playerXGuess-1] = "F";
-            } else if(grid[playerYGuess-1][playerXGuess-1].equals("hidden")|| grid[playerYGuess-1][playerXGuess-1].equals("marked")){ // if checked square isn't a bomb
+                if(grid[playerYGuess-1][playerXGuess-1].equals("hidden")|| grid[playerYGuess-1][playerXGuess-1].equals("marked")){
+                    grid[playerYGuess-1][playerXGuess-1] = "bozoSquare";
+                }else if( grid[playerYGuess-1][playerXGuess-1].equals("bomb")){
+                    grid[playerYGuess-1][playerXGuess-1] = "flaggedBomb";
+                }
+            } else if(grid[playerYGuess-1][playerXGuess-1].equals("hidden")|| grid[playerYGuess-1][playerXGuess-1].equals("marked") || grid[playerYGuess-1][playerXGuess-1].equals("bozoSquare")){ // if checked square isn't a bomb
                 grid[playerYGuess-1][playerXGuess-1] = surroundingBombs(grid, playerYGuess-1, playerXGuess-1);
-            } else if( grid[playerYGuess-1][playerXGuess-1].equals("bomb")){
+            } else if( grid[playerYGuess-1][playerXGuess-1].equals("bomb") ||  grid[playerYGuess-1][playerXGuess-1].equals("flaggedBomb")){
                 gameWon = true;
                 printGrid(grid, 'x');
                 System.out.println("Game Over"); //ends game if guessed square is a bomb
             }
-            
-            
-            
             
             //checks all squares, if all non bombs have been revealed, end game
              for(int x=0; x<grid.length; x++){
@@ -174,6 +175,8 @@ public class Minesweeper
                     System.out.print(" " + bombChar + "  " );
                 }else if (grid[y][x].equals("0")){
                     System.out.print("    " );
+                }else if (grid[y][x].equals("flaggedBomb") || grid[y][x].equals("bozoSquare")){
+                    System.out.print(" F  " );
                 }else {
                     System.out.print(" " + grid[y][x] + "  ");
                 }
