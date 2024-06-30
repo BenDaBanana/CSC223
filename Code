@@ -10,9 +10,10 @@ public class Minesweeper
 {
     public static void main(String[] args){
         Scanner keyboard = new Scanner(System.in);
-        String[][] grid = new String[1][1];
+        //setup variables
+        String[][] grid = new String[1][1]; 
         String option;
-        int bombs = 0;  //setup variables
+        int bombs = 0;  
         char playerXLetter;
         int playerXGuess = 0;
         int playerYGuess;
@@ -25,7 +26,7 @@ public class Minesweeper
         boolean gameWon = false;
         boolean rightInput = true;
         boolean firstTurn = true;
-        boolean letterInput;
+        boolean letterInput = false;
         boolean isFlagging = false;
         
         while(rightInput){
@@ -59,13 +60,14 @@ public class Minesweeper
         }
         
         printGrid(grid, '.');
-        
+        //main game loop
         while (gameWon == false){
             hiddenTiles = 0;
             rightInput = true;
             while(rightInput){
                 System.out.println("would you like to dig a square or flag a square (D or F)");
-                option = keyboard.nextLine();
+                option = keyboard.nextLine();  
+                option = option.toUpperCase();
                 if(option.equals("D")){
                         isFlagging = false;
                         rightInput = false;
@@ -95,8 +97,8 @@ public class Minesweeper
             if(firstTurn){
                     for(int y=playerYGuess-2; y<playerYGuess+1;y++){
                         for(int x=playerXGuess-2; x<playerXGuess+1;x++){
-                            try{
-                            grid[y][x] = "marked"; //prevent bombs from spawning around first guess
+                            try{ //purpose of try/catch statements like these is prenting out of bounds values being checked
+                                grid[y][x] = "marked"; //prevent bombs from spawning around first guess
                             }catch(Exception E){}
                         }
                 }  
@@ -106,9 +108,9 @@ public class Minesweeper
                     
                     //place bombs in random positions
                     if(grid[bombYPosition][bombXPosition] != "bomb" && grid[bombYPosition][bombXPosition] != "marked"){
-                            System.out.println(grid[bombYPosition][bombXPosition]);
-                            grid[bombYPosition][bombXPosition] = "bomb";
-                            bombs --;
+                        System.out.println(grid[bombYPosition][bombXPosition]);
+                        grid[bombYPosition][bombXPosition] = "bomb";
+                        bombs --;
                     }
                 }
             }
@@ -131,7 +133,7 @@ public class Minesweeper
             //checks all squares, if all non bombs have been revealed, end game
              for(int x=0; x<grid.length; x++){
                 for(int y=0; y<grid[0].length; y++){
-                    if(grid[x][y].equals("hidden")){
+                    if(grid[x][y].equals("hidden") || grid[x][y].equals("bozoSquare")){
                         hiddenTiles++;
                     }
                 } 
@@ -149,22 +151,24 @@ public class Minesweeper
             firstTurn = false;
         }
     }   
+    
 
     static void printGrid(String[][] grid, char bombChar){
         System.out.println('\u000c');
         System.out.print("  ");
         
+        //prints letters along the top
         for(char c = 'A'; c < 'A'+ grid[0].length; c++){
             System.out.print(" " + c + "  ") ;  
         }
         System.out.println();
         
+        //goes through the grid, and prints different characters based on the contents of each square
         for(int y=0; y<grid.length; y++){
             for(int x=0; x<grid[0].length; x++){
                 if(x == 0){
-                    if (y > 8){
+                    if (y > 8){ //makes numbers going down the side print evenly as numbers with 2 digits have 1 less space
                         System.out.print(y+1);  
-                    
                     } else{
                         System.out.print(y+1 + " ");
                     }
@@ -172,11 +176,13 @@ public class Minesweeper
                 if(grid[y][x].equals("hidden")){
                     System.out.print(" .  " );
                 } else if (grid[y][x].equals("bomb")){
-                    System.out.print(" " + bombChar + "  " );
+                    System.out.print(" " + bombChar + "  " );//bombChar so that the game can reveal all bombs when the game ends
                 }else if (grid[y][x].equals("0")){
                     System.out.print("    " );
                 }else if (grid[y][x].equals("flaggedBomb") || grid[y][x].equals("bozoSquare")){
                     System.out.print(" F  " );
+                }else if (grid[y][x].equals("marked") || grid[y][x].equals("bozoSquare")){
+                    System.out.print(" .  " );
                 }else {
                     System.out.print(" " + grid[y][x] + "  ");
                 }
@@ -190,8 +196,8 @@ public class Minesweeper
         int playerGuess;
         char playerLetter;
         if(letterInput){
-                playerLetter = keyboard.next().charAt(0);
-                playerGuess = Character.toUpperCase(playerLetter) - 64;
+            playerLetter = keyboard.next().charAt(0); 
+            playerGuess = Character.toUpperCase(playerLetter) - 64; //convert char to int with ASCII values
         }else{
             while(!keyboard.hasNextInt()){
                  keyboard.nextLine();
@@ -204,15 +210,18 @@ public class Minesweeper
     
     static String surroundingBombs(String[][] grid, int yCoordinate, int xCoordinate){
         int bombNum = 0;
+        //check how  many boms around a square
         for(int y=yCoordinate-1; y<yCoordinate+2;y++){
                 for(int x=xCoordinate-1; x<xCoordinate+2;x++){
                     try{
-                        if(grid[y][x].equals("bomb")){
+                        if(grid[y][x].equals("bomb")||grid[y][x].equals("flaggedBomb")){
                             bombNum++;
                         }
                     } catch(Exception e){}
             }
         } 
+        
+        // if there are no bombs, cascade
         if(bombNum == 0){
             grid[yCoordinate][xCoordinate] = "zero";
             cascade(grid, yCoordinate, xCoordinate);
@@ -222,6 +231,7 @@ public class Minesweeper
     }
     
     static void cascade(String[][] grid, int yCoordinate, int xCoordinate){
+        //reveal all squares around a square
         for(int y=yCoordinate-1; y<yCoordinate+2;y++){
                 for(int x=xCoordinate-1; x<xCoordinate+2;x++){
                     try{
