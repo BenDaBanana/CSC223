@@ -36,9 +36,8 @@ public class Minesweeper
             System.out.println('\u000c');
             System.out.println("What size would you like your game: small, medium or large?"); 
             option = keyboard.nextLine();
-            
-            //setup for size of the game
-            if((option.toLowerCase()).equals("small")){ 
+
+            if((option.toLowerCase()).equals("small")){  //setup for size of the game
                 grid = new String[10][8];
                 bombs = 10;
                 rightInput = false;
@@ -67,7 +66,8 @@ public class Minesweeper
         while (gameWon == false){//main game loop
             hiddenTiles = 0;
             rightInput = true;
-            while(rightInput){
+            
+            while(rightInput){//establish whether player is digging or falgging a square
                 System.out.println("would you like to dig a square or flag a square (D or F)");
                 option = keyboard.nextLine();  
                 option = option.toUpperCase();
@@ -95,9 +95,15 @@ public class Minesweeper
                 System.out.println("ERROR, enter Y coordinate between 1 and " +yMax);
                 playerYGuess = getInput(yMax, letterInput);
             }
-            
-            //makes the first turn always a cascade
-            if(firstTurn){
+                
+                /*
+                 * This if statement makes it so that the first turn is always a cascade
+                 * This is important because for my program to be usable I will need to make it so that the player can't
+                 * just hit a bomb or get a 1 one the first turn. this code is only run on the firs tturn of the game, 
+                 * and it works by generating the bombs away from the first guess of the game.
+                 * 
+                 */
+                if(firstTurn){
                     for(int y=playerYGuess-2; y<playerYGuess+1;y++){
                         for(int x=playerXGuess-2; x<playerXGuess+1;x++){
                             try{ //purpose of try/catch statements like these is preventing out of bounds values being checked
@@ -111,26 +117,33 @@ public class Minesweeper
                     
                     //place bombs in random positions taht aren't already bombs or around the first guess
                     if(grid[bombYPosition][bombXPosition] != "bomb" && grid[bombYPosition][bombXPosition] != "marked"){
-                        System.out.println(grid[bombYPosition][bombXPosition]);
                         grid[bombYPosition][bombXPosition] = "bomb";
                         bombs --;
                     }
                 }
             }
             
-            //reveal selected square and determine correct action
+            //check selected square and determine correct action
             if(isFlagging){
                 if(grid[playerYGuess-1][playerXGuess-1].equals("hidden")|| grid[playerYGuess-1][playerXGuess-1].equals("marked")){
-                    grid[playerYGuess-1][playerXGuess-1] = "falseFlagged";
+                    grid[playerYGuess-1][playerXGuess-1] = "falseFlagged"; //if flagging a normal square, call it 'falseFlagged'
+                    
                 }else if( grid[playerYGuess-1][playerXGuess-1].equals("bomb")){
-                    grid[playerYGuess-1][playerXGuess-1] = "flaggedBomb";
+                    grid[playerYGuess-1][playerXGuess-1] = "flaggedBomb"; //if flagging a bomb, falg the bomb
                 }
-            } else if(grid[playerYGuess-1][playerXGuess-1].equals("hidden")|| grid[playerYGuess-1][playerXGuess-1].equals("marked") || grid[playerYGuess-1][playerXGuess-1].equals("falseFlagged")){ // if checked square isn't a bomb
-                grid[playerYGuess-1][playerXGuess-1] = surroundingBombs(grid, playerYGuess-1, playerXGuess-1);
+            } else if(grid[playerYGuess-1][playerXGuess-1].equals("hidden")|| grid[playerYGuess-1][playerXGuess-1].equals("marked")){ // if checked square isn't a bomb
+                grid[playerYGuess-1][playerXGuess-1] = surroundingBombs(grid, playerYGuess-1, playerXGuess-1); // if digging a normal square, reveal it
+                
+            }else if(grid[playerYGuess-1][playerXGuess-1].equals("falseFlagged")){ 
+                grid[playerYGuess-1][playerXGuess-1] = "hidden";//if digging flagged square that isnt a bomb, make it a normal square
+                
+            }else if( grid[playerYGuess-1][playerXGuess-1].equals("flaggedBomb")){ 
+                grid[playerYGuess-1][playerXGuess-1] = "bomb";//if digging flagged square that is a bomb, make is a bomb 
+                
             } else if( grid[playerYGuess-1][playerXGuess-1].equals("bomb") ||  grid[playerYGuess-1][playerXGuess-1].equals("flaggedBomb")){
                 gameWon = true;
                 printGrid(grid, 'x', xMax);
-                System.out.println("Game Over"); //ends game if guessed square is a bomb
+                System.out.println("Game Over"); //if digging a sqaure that is a bomb, end the game
             }
             
             //checks how many squares the player has left to sweep
@@ -141,7 +154,7 @@ public class Minesweeper
                     }
                 } 
             }
-            if(hiddenTiles== 0){
+            if(hiddenTiles== 0){//if the player hyas dug all non bomb squares, the game is won
                 gameWon = true;
                 printGrid(grid, 'x', xMax);
                 System.out.println("Game Won, good job");
@@ -153,8 +166,8 @@ public class Minesweeper
             }
             firstTurn = false;
         }
-    }   
-    
+       
+    }
     /**
      * printGrid as a method prints the board each turn
      * printGrid takes in a 2 dimensional array called grid, and a character to print the bomb with
