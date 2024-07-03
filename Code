@@ -34,6 +34,11 @@ public class Minesweeper
         
         while(rightInput){
             System.out.println('\u000c');
+            System.out.println("   Welcome to Minesweeper!"); 
+            System.out.println("******************************"); 
+            System.out.println("\nMinesweeper is a popular puzzle game where the goal is to clear a minefield by clcicking safe squares"); 
+            System.out.println("If you clear a safe square it will display a number, that number corresponds to how many bombs are surrounding that square "); 
+            System.out.println("if you think a square is a bomb you can flag it to help you work out what's safe."); 
             System.out.println("What size would you like your game: small, medium or large?"); 
             option = keyboard.nextLine();
 
@@ -46,17 +51,19 @@ public class Minesweeper
                  bombs = 40;
                  rightInput = false;
             } else if((option.toLowerCase()).equals("large")){
-                 grid = new String[30][26];
-                 bombs = 125;
+                 grid = new String[30][26];//this is about as largew as i can make the game as i am limited to 26 because of the english alphabet
+                 bombs = 325;
                  rightInput = false;
             }
         }
+        
+        //calculate max bounds for teh grid, needed for things such as error checking
         xMax = grid[0].length;
         yMax = grid.length;
         
         for(int y=0; y<yMax; y++){  // setup grid with blank squares
             for(int x=0; x<xMax; x++){
-                grid[y][x] = "hidden";
+                grid[y][x] = "hidden";//hidden is the most basic state, it's a non bomb that has been undiscovered
                 
             } 
         }
@@ -67,16 +74,16 @@ public class Minesweeper
             hiddenTiles = 0;
             rightInput = true;
             
-            while(rightInput){//establish whether player is digging or falgging a square
+            while(rightInput){//establish whether player is digging or flagging a square
                 System.out.println("would you like to dig a square or flag a square (D or F)");
                 option = keyboard.nextLine();  
                 option = option.toUpperCase();
                 if(option.equals("D")){
-                        isFlagging = false;
-                        rightInput = false;
+                    isFlagging = false; 
+                    rightInput = false;
                 } else if(option.equals("F")){
-                        isFlagging = true;
-                        rightInput = false;
+                    isFlagging = true;
+                    rightInput = false;
                 }
             }
             
@@ -97,19 +104,19 @@ public class Minesweeper
             }
                 
                 /*
-                 * This if statement makes it so that the first turn is always a cascade
+                 * This if statement below makes it so that the first turn is always a cascade
                  * This is important because for my program to be usable I will need to make it so that the player can't
-                 * just hit a bomb or get a 1 one the first turn. this code is only run on the firs tturn of the game, 
+                 * just hit a bomb or get a 1 one the first turn. this code is only run on the first turn of the game, 
                  * and it works by generating the bombs away from the first guess of the game.
                  * 
                  */
-                if(firstTurn){
-                    for(int y=playerYGuess-2; y<playerYGuess+1;y++){
-                        for(int x=playerXGuess-2; x<playerXGuess+1;x++){
-                            try{ //purpose of try/catch statements like these is preventing out of bounds values being checked
-                                grid[y][x] = "marked"; //prevent bombs from spawning around first guess
-                            }catch(Exception E){}
-                        }
+            if(firstTurn){
+                for(int y=playerYGuess-2; y<playerYGuess+1;y++){
+                    for(int x=playerXGuess-2; x<playerXGuess+1;x++){
+                        try{ //purpose of try/catch statements like these is preventing out of bounds values being checked
+                             grid[y][x] = "marked"; //prevent bombs from spawning around first guess
+                        }catch(Exception E){}
+                    }
                 }  
                 while(bombs > 0){
                     bombYPosition = (int)Math.floor(Math.random() * grid.length);
@@ -237,7 +244,7 @@ public class Minesweeper
             playerLetter = keyboard.next().charAt(0); 
             playerGuess = Character.toUpperCase(playerLetter) - 64; //convert char to int with ASCII values
         }else{
-            while(!keyboard.hasNextInt()){
+            while(!keyboard.hasNextInt()){// prevents non integer values being accepted, as it would break the code
                  keyboard.nextLine();
                  System.out.println("input error, please enter an integer between 1-"+max);
             }
@@ -291,6 +298,5 @@ public class Minesweeper
                     } catch(Exception e){}
             }
         } 
-       
     }
 }
